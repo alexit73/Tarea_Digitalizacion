@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List con Firebase</title>
+</head>
+<body>
+  <h1>📝 To-Do List</h1>
+
+  <input type="text" id="tareaInput" placeholder="Escribe una tarea">
+  <button onclick="agregarTarea()">Agregar</button>
+
+  <ul id="listaTareas"></ul>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVz2TsFddveBgym08fUiRc__wRZO4QXMM",
+      authDomain: "proyectodigitalizacion-402d0.firebaseapp.com",
+      projectId: "proyectodigitalizacion-402d0",
+      storageBucket: "proyectodigitalizacion-402d0.firebasestorage.app",
+      messagingSenderId: "530755900538",
+      appId: "1:530755900538:web:a7377cdfa3b208990bd7c3",
+      measurementId: "G-HNQBKQX2HM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Agrega una tarea
+    window.agregarTarea = async () => {
+      const tareaInput = document.getElementById("tareaInput");
+      const texto = tareaInput.value.trim();
+      if (texto !== "") {
+        await addDoc(collection(db, "tareas"), { texto });
+        tareaInput.value = "";
+        cargarTareas();
+      }
+    };
+
+    // Carga tareas existentes
+    async function cargarTareas() {
+      const lista = document.getElementById("listaTareas");
+      lista.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "tareas"));
+      querySnapshot.forEach(doc => {
+        const li = document.createElement("li");
+        li.textContent = doc.data().texto;
+        lista.appendChild(li);
+      });
+    }
+
+    cargarTareas();
+  </script>
+</body>
+</html>
